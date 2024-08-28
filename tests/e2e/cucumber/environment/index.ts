@@ -25,7 +25,7 @@ import { Group, User } from '../../support/types'
 import { getTokenFromLogin, setAccessToken } from '../../support/utils/tokenHelper'
 import { createdTokenStore, keycloakTokenStore } from '../../support/store/token'
 import { removeTempUploadDirectory } from '../../support/utils/runtimeFs'
-import { refreshToken, setupKeycloakAdminUser } from '../../support/api/keycloak'
+import { accessToken, refreshToken, setupKeycloakAdminUser } from '../../support/api/keycloak'
 import { closeSSEConnections } from '../../support/environment/sse'
 
 export { World }
@@ -68,11 +68,10 @@ Before(async function (this: World, { pickle }: ITestCaseHookParameter) {
     }
   })
   if (!config.basicAuth) {
-    // Currently, access token are received for keycloak via login
-    // Todo: Make keycloak get it's access token via api
     if (config.keycloak) {
+      // In kyecloak setup with oCIS, access token is received via login to the browser directly.
       await setAdminTokenFromLogin(state.browser)
-      await setKeycloakAdminToken(state.browser)
+      await setKeycloakAdminTokenfromApi(this.usersEnvironment.getUser({ key: 'admin' }))
     } else {
       await setAdminToken(this.usersEnvironment.getUser({ key: 'admin' }))
     }
@@ -200,10 +199,6 @@ const setAdminTokenFromLogin = async (browser: Browser) => {
   return await getTokenFromLogin({ browser })
 }
 
-const setKeycloakAdminToken = async (browser: Browser) => {
-  return await getTokenFromLogin({
-    browser,
-    url: config.keycloakLoginUrl,
-    tokenType: 'keycloak'
-  })
+const setKeycloakAdminTokenfromApi = async (user: User) => {
+  return await accessToken(user)
 }
