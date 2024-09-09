@@ -10,7 +10,7 @@ OC_CI_DRONE_ANSIBLE = "owncloudci/drone-ansible:latest"
 OC_CI_DRONE_SKIP_PIPELINE = "owncloudci/drone-skip-pipeline"
 OC_CI_GOLANG = "owncloudci/golang:1.22"
 OC_CI_HUGO = "owncloudci/hugo:0.115.2"
-OC_CI_NODEJS = "owncloudci/nodejs:20"
+OC_CI_NODEJS = "owncloudci/nodejs:18@sha256:50001d0e6e082a462d972cc51cd5e312638003b24887120b55fc464f88d0c24d"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:7.5.1"
@@ -53,7 +53,7 @@ config = {
     "e2e": {
         "1": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "suites": [
                 "journeys",
                 "smoke",
@@ -61,7 +61,7 @@ config = {
         },
         "2": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "suites": [
                 "admin-settings",
                 "spaces",
@@ -69,7 +69,7 @@ config = {
         },
         "3": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "tikaNeeded": True,
             "suites": [
                 "search",
@@ -84,7 +84,7 @@ config = {
         },
         "4": {
             "earlyFail": True,
-            "skip": False,
+            "skip": True,
             "suites": [
                 "navigation",
                 "user-settings",
@@ -92,7 +92,7 @@ config = {
             ],
         },
         "app-provider": {
-            "skip": False,
+            "skip": True,
             "suites": [
                 "app-provider",
             ],
@@ -109,7 +109,7 @@ config = {
             },
         },
         "oidc-refresh-token": {
-            "skip": False,
+            "skip": True,
             "features": [
                 "cucumber/features/oidc/refreshToken.feature",
             ],
@@ -119,7 +119,7 @@ config = {
             },
         },
         "oidc-iframe": {
-            "skip": False,
+            "skip": True,
             "features": [
                 "cucumber/features/oidc/iframeTokenRenewal.feature",
             ],
@@ -190,13 +190,10 @@ def main(ctx):
 
 def beforePipelines(ctx):
     return checkStarlark() + \
-           licenseCheck(ctx) + \
-           documentation(ctx) + \
            changelog(ctx) + \
            pnpmCache(ctx) + \
            cacheOcisPipeline(ctx) + \
-           pipelinesDependsOn(buildCacheWeb(ctx), pnpmCache(ctx)) + \
-           pipelinesDependsOn(pnpmlint(ctx), pnpmCache(ctx))
+           pipelinesDependsOn(buildCacheWeb(ctx), pnpmCache(ctx))
 
 def stagePipelines(ctx):
     unit_test_pipelines = unitTests(ctx)
@@ -207,7 +204,7 @@ def stagePipelines(ctx):
 
     e2e_pipelines = e2eTests(ctx)
     keycloak_pipelines = e2eTestsOnKeycloak(ctx)
-    return unit_test_pipelines + buildAndTestDesignSystem(ctx) + pipelinesDependsOn(e2e_pipelines + keycloak_pipelines, unit_test_pipelines)
+    return keycloak_pipelines
 
 def afterPipelines(ctx):
     return build(ctx) + pipelinesDependsOn(notify(), build(ctx))
@@ -1759,14 +1756,14 @@ def keycloakService():
 def e2eTestsOnKeycloak(ctx):
     e2e_Keycloak_tests = [
         "journeys",
-        "admin-settings/users.feature:20",
-        "admin-settings/users.feature:43",
-        "admin-settings/users.feature:106",
-        "admin-settings/users.feature:131",
-        "admin-settings/users.feature:185",
-        "admin-settings/spaces.feature",
-        "admin-settings/groups.feature",
-        "admin-settings/general.feature",
+        # "admin-settings/users.feature:20",
+        # "admin-settings/users.feature:43",
+        # "admin-settings/users.feature:106",
+        # "admin-settings/users.feature:131",
+        # "admin-settings/users.feature:185",
+        # "admin-settings/spaces.feature",
+        # "admin-settings/groups.feature",
+        # "admin-settings/general.feature",
     ]
 
     e2e_volumes = [

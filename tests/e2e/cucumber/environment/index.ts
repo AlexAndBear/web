@@ -72,6 +72,11 @@ Before(async function (this: World, { pickle }: ITestCaseHookParameter) {
         break
     }
   })
+
+  console.log('Browser version...........')
+  console.log(state.browser.version())
+  console.log('Browser version...........')
+
   if (!config.basicAuth) {
     // Currently, access token are received for keycloak via login
     // Todo: Make keycloak get it's access token via api

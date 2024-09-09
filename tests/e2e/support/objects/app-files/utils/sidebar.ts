@@ -3,7 +3,10 @@ import util from 'util'
 import { locatorUtils } from '../../../utils'
 
 const contextMenuSelector =
-  '//span[@data-test-resource-name="%s"]/ancestor::tr[contains(@class, "oc-tbody-tr")]//button[contains(@class, "resource-table-btn-action-dropdown")]'
+  '//span[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "resource-table-btn-action-dropdown")]'
+const detailsContextMenuItem = 'button.oc-files-actions-show-details-trigger'
+const sidebarCloseButton =
+  '//div[@data-testid="app-sidebar"]//div[contains(@class, "is-active")]//button[contains(@class, "header__close")]'
 
 const openForResource = async ({
   page,
@@ -13,7 +16,7 @@ const openForResource = async ({
   resource: string
 }): Promise<void> => {
   await page.locator(util.format(contextMenuSelector, resource)).click()
-  await page.locator('.oc-files-actions-show-details-trigger').click()
+  await page.locator(detailsContextMenuItem).click()
 }
 
 export const openPanelForResource = async ({
@@ -48,8 +51,7 @@ export const open = async ({
 }
 
 export const close = async ({ page }: { page: Page }): Promise<void> => {
-  const closeButtonSelector = `//div[contains(@class,"sidebar-panel is-active")]//button[contains(@class,"header__close")]`
-  await page.locator(closeButtonSelector).click()
+  await page.locator(sidebarCloseButton).click()
 }
 
 export const openPanel = async ({ page, name }: { page: Page; name: string }): Promise<void> => {
