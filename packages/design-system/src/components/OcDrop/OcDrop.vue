@@ -1,10 +1,5 @@
 <template>
-  <div
-    :id="dropId"
-    ref="drop"
-    class="oc-drop oc-box-shadow-medium oc-rounded"
-    @click="$_ocDrop_close"
-  >
+  <div :id="dropId" ref="drop" class="oc-drop oc-box-shadow-medium oc-rounded" @click="onClick">
     <div
       v-if="$slots.default"
       :class="['oc-card oc-card-body oc-background-secondary', paddingClass]"
@@ -23,7 +18,7 @@ import { destroy, hideOnEsc } from '../../directives/OcTooltip'
 import { AVAILABLE_SIZES } from '../../helpers/constants'
 import uniqueId from '../../utils/uniqueId'
 import { getSizeClass } from '../../utils/sizeClasses'
-import { defineComponent } from 'vue'
+import { defineComponent, ref, unref } from 'vue'
 
 /**
  * Position any element in relation to another element.
@@ -125,8 +120,24 @@ export default defineComponent({
     }
   },
   emits: ['hideDrop', 'showDrop'],
-  data() {
-    return { tippy: null }
+  setup(props) {
+    const tippy = ref(null)
+
+    const show = (duration?: number) => {
+      unref(tippy)?.show(duration)
+    }
+
+    const hide = (duration?: number) => {
+      unref(tippy)?.hide(duration)
+    }
+
+    const onClick = () => {
+      if (props.closeOnClick) {
+        hide()
+      }
+    }
+
+    return { tippy, show, hide, onClick }
   },
   computed: {
     triggerMapping() {
@@ -227,31 +238,6 @@ export default defineComponent({
     }
 
     this.tippy = tippy(to, config)
-  },
-  methods: {
-    $_ocDrop_close() {
-      if (this.closeOnClick) {
-        this.tippy.hide()
-      }
-    },
-
-    /**
-     * Programatically show the drop
-     *
-     * @public
-     */
-    show(duration?: number) {
-      this.tippy.show(duration)
-    },
-
-    /**
-     * Programatically hide the drop
-     *
-     * @public
-     */
-    hide(duration?: number) {
-      this.tippy.hide(duration)
-    }
   }
 })
 </script>

@@ -55,14 +55,11 @@
             </div>
           </template>
         </item-filter>
-        <item-filter
+        <date-filter
           v-if="availableLastModifiedValues.length"
           ref="lastModifiedFilter"
           :filter-label="$gettext('Last Modified')"
-          :filterable-attributes="['label']"
           :items="availableLastModifiedValues"
-          :show-option-filter="false"
-          :close-on-click="true"
           class="files-search-filter-last-modified oc-mr-s"
           display-name-attribute="label"
           filter-name="lastModified"
@@ -70,7 +67,7 @@
           <template #item="{ item }">
             <span v-text="item.label" />
           </template>
-        </item-filter>
+        </date-filter>
 
         <item-filter-toggle
           v-if="fullTextSearchEnabled"
@@ -150,6 +147,7 @@
 import { useResourcesViewDefaults } from '../../composables'
 import {
   AppLoadingSpinner,
+  DateFilter,
   SearchResult,
   useCapabilityStore,
   useConfigStore,
@@ -229,6 +227,7 @@ export default defineComponent({
     ResourceTable,
     FilesViewWrapper,
     ItemFilter,
+    DateFilter,
     ItemFilterToggle
   },
   props: {
