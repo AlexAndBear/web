@@ -53,7 +53,7 @@ config = {
     "e2e": {
         "1": {
             "earlyFail": True,
-            "skip": True,
+            "skip": False,
             "suites": [
                 "journeys",
                 "smoke",
@@ -61,7 +61,7 @@ config = {
         },
         "2": {
             "earlyFail": True,
-            "skip": True,
+            "skip": False,
             "suites": [
                 "admin-settings",
                 "spaces",
@@ -69,7 +69,7 @@ config = {
         },
         "3": {
             "earlyFail": True,
-            "skip": True,
+            "skip": False,
             "tikaNeeded": True,
             "suites": [
                 "search",
@@ -84,7 +84,7 @@ config = {
         },
         "4": {
             "earlyFail": True,
-            "skip": True,
+            "skip": False,
             "suites": [
                 "navigation",
                 "user-settings",
@@ -92,7 +92,7 @@ config = {
             ],
         },
         "app-provider": {
-            "skip": True,
+            "skip": False,
             "suites": [
                 "app-provider",
             ],
@@ -109,7 +109,7 @@ config = {
             },
         },
         "oidc-refresh-token": {
-            "skip": True,
+            "skip": False,
             "features": [
                 "cucumber/features/oidc/refreshToken.feature",
             ],
@@ -119,7 +119,7 @@ config = {
             },
         },
         "oidc-iframe": {
-            "skip": True,
+            "skip": False,
             "features": [
                 "cucumber/features/oidc/iframeTokenRenewal.feature",
             ],
@@ -204,7 +204,7 @@ def stagePipelines(ctx):
 
     e2e_pipelines = e2eTests(ctx)
     keycloak_pipelines = e2eTestsOnKeycloak(ctx)
-    return keycloak_pipelines
+    return e2e_pipelines + keycloak_pipelines
 
 def afterPipelines(ctx):
     return build(ctx) + pipelinesDependsOn(notify(), build(ctx))
@@ -573,7 +573,7 @@ def e2eTests(ctx):
         environment = {
             "HEADLESS": "true",
             "RETRY": "1",
-            "REPORT_TRACING": params["reportTracing"],
+            "REPORT_TRACING": True,
             "BASE_URL_OCIS": "ocis:9200",
             "FAIL_ON_UNCAUGHT_CONSOLE_ERR": "true",
         }
@@ -1756,14 +1756,14 @@ def keycloakService():
 def e2eTestsOnKeycloak(ctx):
     e2e_Keycloak_tests = [
         "journeys",
-        # "admin-settings/users.feature:20",
-        # "admin-settings/users.feature:43",
-        # "admin-settings/users.feature:106",
-        # "admin-settings/users.feature:131",
-        # "admin-settings/users.feature:185",
-        # "admin-settings/spaces.feature",
-        # "admin-settings/groups.feature",
-        # "admin-settings/general.feature",
+        "admin-settings/users.feature:20",
+        "admin-settings/users.feature:43",
+        "admin-settings/users.feature:106",
+        "admin-settings/users.feature:131",
+        "admin-settings/users.feature:185",
+        "admin-settings/spaces.feature",
+        "admin-settings/groups.feature",
+        "admin-settings/general.feature",
     ]
 
     e2e_volumes = [
@@ -1831,8 +1831,6 @@ def e2eTestsOnKeycloak(ctx):
                          "KEYCLOAK_HOST": "keycloak:8443",
                      },
                      "commands": [
-                         "wget -q -P /tmp https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_125.0.6422.141-1_amd64.deb",
-                         "apt install -y /tmp/google-chrome-stable_125.0.6422.141-1_amd64.deb",
                          "cd tests/e2e",
                          "bash run-e2e.sh %s" % " ".join(["cucumber/features/" + tests for tests in e2e_Keycloak_tests]),
                      ],
