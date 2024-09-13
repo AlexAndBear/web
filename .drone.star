@@ -571,6 +571,7 @@ def e2eTests(ctx):
             params["reportTracing"] = "true"
 
         environment = {
+            "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
             "BROWSER": "chromium",
             "HEADLESS": "true",
             "RETRY": "1",
@@ -581,6 +582,7 @@ def e2eTests(ctx):
 
         steps = skipIfUnchanged(ctx, "e2e-tests") + \
                 restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
+                restoreBuildArtifactCache(ctx, "playwright", ".playwright") + \
                 installPnpm() + \
                 restoreBuildArtifactCache(ctx, "web-dist", "dist")
 
@@ -1794,6 +1796,7 @@ def e2eTestsOnKeycloak(ctx):
         return []
 
     steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
+            restoreBuildArtifactCache(ctx, "playwright", ".playwright") + \
             installPnpm() + \
             keycloakService() + \
             restoreBuildArtifactCache(ctx, "web-dist", "dist")
@@ -1824,6 +1827,7 @@ def e2eTestsOnKeycloak(ctx):
                      "name": "e2e-tests",
                      "image": OC_CI_NODEJS,
                      "environment": {
+                         "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
                          "BROWSER": "chromium",
                          "BASE_URL_OCIS": "ocis:9200",
                          "HEADLESS": "true",
