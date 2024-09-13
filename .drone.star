@@ -10,7 +10,7 @@ OC_CI_DRONE_ANSIBLE = "owncloudci/drone-ansible:latest"
 OC_CI_DRONE_SKIP_PIPELINE = "owncloudci/drone-skip-pipeline"
 OC_CI_GOLANG = "owncloudci/golang:1.22"
 OC_CI_HUGO = "owncloudci/hugo:0.115.2"
-OC_CI_NODEJS = "owncloudci/nodejs:18@sha256:50001d0e6e082a462d972cc51cd5e312638003b24887120b55fc464f88d0c24d"
+OC_CI_NODEJS = "owncloudci/nodejs:20"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
 ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:7.5.1"
@@ -571,6 +571,7 @@ def e2eTests(ctx):
             params["reportTracing"] = "true"
 
         environment = {
+            "BROWSER": "chromium",
             "HEADLESS": "true",
             "RETRY": "1",
             "REPORT_TRACING": params["reportTracing"],
@@ -1823,6 +1824,7 @@ def e2eTestsOnKeycloak(ctx):
                      "name": "e2e-tests",
                      "image": OC_CI_NODEJS,
                      "environment": {
+                         "BROWSER": "chromium",
                          "BASE_URL_OCIS": "ocis:9200",
                          "HEADLESS": "true",
                          "RETRY": "1",
