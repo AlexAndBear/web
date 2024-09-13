@@ -571,8 +571,6 @@ def e2eTests(ctx):
             params["reportTracing"] = "true"
 
         environment = {
-            "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
-            "BROWSER": "chromium",
             "HEADLESS": "true",
             "RETRY": "1",
             "REPORT_TRACING": params["reportTracing"],
@@ -582,7 +580,6 @@ def e2eTests(ctx):
 
         steps = skipIfUnchanged(ctx, "e2e-tests") + \
                 restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
-                restoreBuildArtifactCache(ctx, "playwright", ".playwright") + \
                 installPnpm() + \
                 restoreBuildArtifactCache(ctx, "web-dist", "dist")
 
@@ -1796,7 +1793,6 @@ def e2eTestsOnKeycloak(ctx):
         return []
 
     steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
-            restoreBuildArtifactCache(ctx, "playwright", ".playwright") + \
             installPnpm() + \
             keycloakService() + \
             restoreBuildArtifactCache(ctx, "web-dist", "dist")
@@ -1827,16 +1823,16 @@ def e2eTestsOnKeycloak(ctx):
                      "name": "e2e-tests",
                      "image": OC_CI_NODEJS,
                      "environment": {
-                         "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
-                         "BROWSER": "chromium",
                          "BASE_URL_OCIS": "ocis:9200",
                          "HEADLESS": "true",
                          "RETRY": "1",
-                         "REPORT_TRACING": "with-tracing" in ctx.build.title.lower(),
+                         "REPORT_TRACING": True,
                          "KEYCLOAK": "true",
                          "KEYCLOAK_HOST": "keycloak:8443",
                      },
                      "commands": [
+                         "wget -q -P /tmp https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_125.0.6422.141-1_amd64.deb",
+                         "apt install -y /tmp/google-chrome-stable_125.0.6422.141-1_amd64.deb",
                          "cd tests/e2e",
                          "bash run-e2e.sh %s" % " ".join(["cucumber/features/" + tests for tests in e2e_Keycloak_tests]),
                      ],
